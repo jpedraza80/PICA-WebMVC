@@ -1,0 +1,33 @@
+﻿@inject Microsoft.AspNetCore.Http.IHttpContextAccessor HttpContextAccessor;
+@{
+    ViewData["Title"] = "Página de bienvenida de usuario";
+}
+
+@if (HttpContextAccessor.HttpContext.User.Identity.IsAuthenticated)
+{
+    <div class="text-center">
+        <h1>Hola @HttpContextAccessor.HttpContext.User.Claims.FirstOrDefault(c => c.Type == "FullName")?.Value!</h1>
+        <p>@HttpContextAccessor.HttpContext.User.Identity.Name</p>
+    </div>
+}
+
+<div class="row">
+    <div class="col-sm-6">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Datos de contacto</h5>
+                <p class="card-text">Página con formulario de datos de contacto</p>
+                <a role="button" class="btn btn-success" asp-area="" asp-controller="Members" asp-action="Contact">Actualizar</a>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-6">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Página de error</h5>
+                <p class="card-text">Página personalizada para manejo de errores</p>
+                <a role="button" class="btn btn-danger" asp-area="" asp-controller="Members" asp-action="RaiseException">Lanzar</a>
+            </div>
+        </div>
+    </div>
+</div>

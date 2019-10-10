@@ -1,0 +1,8 @@
+﻿@inject Microsoft.AspNetCore.Http.IHttpContextAccessor HttpContextAccessor;
+
+@if (HttpContextAccessor.HttpContext.User.Identity.IsAuthenticated)
+{
+    <form class="form-inline my-2 my-lg-0" asp-controller="Login" asp-action="Logout" method="post" id="logoutForm">
+        <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Cerrar sesión</button>
+    </form>
+}
