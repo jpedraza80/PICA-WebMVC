@@ -1,25 +1,32 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Pica.Taller.Mvc.Models;
+using Pica.Taller.Web.Interfaces;
+using System;
+using System.Threading.Tasks;
 
 namespace Pica.Taller.Mvc.Controllers
 {
     [Authorize]
     public class MembersController : Controller
     {
+        public readonly IContactViewModelService ContactService;
+
+        public MembersController(IContactViewModelService contactService)
+        {
+            ContactService = contactService;
+        }
+
         public IActionResult Index()
         {
             return View();
         }
 
         [Authorize(Roles = "Member")]
-        public IActionResult Contact()
+        public async Task<IActionResult> Contact()
         {
-            return View();
+            ContactViewModel model = await ContactService.Get(User.Identity.Name);
+            return View(model);
         }
 
         public IActionResult Acknowledgment()
@@ -34,11 +41,12 @@ namespace Pica.Taller.Mvc.Controllers
 
         [HttpPost]
         [Authorize(Roles = "Member")]
-        public IActionResult Contact(ContactViewModel model)
+        public async Task<IActionResult> Contact(ContactViewModel model)
         {
             IActionResult result = View(model);
             if (ModelState.IsValid)
             {
+                await ContactService.Update(model);
                 result = RedirectToAction("Acknowledgment");
             }
             return result;

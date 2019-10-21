@@ -1,16 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authentication.Cookies;
+﻿using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Pica.Taller.Core.Interfaces;
+using Pica.Taller.Core.Services;
+using Pica.Taller.Data;
+using Pica.Taller.Web.Interfaces;
+using Pica.Taller.Web.Services;
 
 namespace Pica.Taller.Mvc
 {
@@ -32,7 +32,6 @@ namespace Pica.Taller.Mvc
                 options.MinimumSameSitePolicy = SameSiteMode.None;
             });
 
-
             services.AddMvc(options =>
             {
                 options.RespectBrowserAcceptHeader = true;
@@ -44,10 +43,22 @@ namespace Pica.Taller.Mvc
             .AddCookie(options =>
             {
                 options.LoginPath = "/Login";
-                options.AccessDeniedPath = "/Home/AccessDenied";                
+                options.AccessDeniedPath = "/Home/AccessDenied";
             });
 
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+
+            services.AddDbContext<TallerContext>(c =>
+                c.UseInMemoryDatabase("Taller"));
+
+            //Core Services
+            services.AddScoped(typeof(IContactService), typeof(ContactService));
+
+            //Data Services
+            services.AddScoped(typeof(IContactRepository), typeof(ContactRepository));
+
+            //Mvc Services
+            services.AddScoped(typeof(IContactViewModelService), typeof(ContactViewModelService));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
